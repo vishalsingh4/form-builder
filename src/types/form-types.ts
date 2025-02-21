@@ -17,11 +17,17 @@ export enum EleTypes {
 
   export type FormElement = {
     id: string;
+    name: string;
+    placeholder?: string;
     type: EleTypes.text | EleTypes.number | EleTypes.select | EleTypes.radio;
     label: string;
     value: string | number;
-    onChange?: (value: string) => void;
     options?: string[];
     validation?: ValidationRule;
+    events?: {
+      onChange?: (value: string) => void;
+      onBlur?: (value: string) => void;
+      onFocus?: (value: string) => void;
+    }
   };
   

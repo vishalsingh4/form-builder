@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { FormElement, EleTypes } from "../../types";
-import { validateFormField } from "../../utils";
+import { debounce, validateFormField } from "../../utils";
 
 import "./index.css";
+import { DEBOUNCE_DELAY } from "../../constants";
 
 interface FormBuilderProps {
   formElements: FormElement[];
@@ -22,6 +23,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { id, type, value } = e.target;
+
     setFormState((prevState) => ({
       ...prevState,
       [id]: type === EleTypes.number ? +value : value,
@@ -49,15 +51,19 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
     console.log(formState);
   };
 
-  const renderFormFields = ({
-    id,
-    type,
-    options,
-  }: {
-    id: string;
-    type: EleTypes.text | EleTypes.number | EleTypes.select | EleTypes.radio;
-    options: string[] | undefined;
-  }) => {
+  const renderFormFields = (ele: FormElement) => {
+    const { id, name, placeholder, type, label, options, events } = ele;
+    const commonProps = { name, placeholder, label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      handleChange(e);
+
+      if (events?.onChange) {
+        // debounce(() => {
+        //   events.onChange!(e.target.value);
+        // }, DEBOUNCE_DELAY);
+        events.onChange!(e.target.value);
+      }
+    } };
+
     switch (type) {
       case EleTypes.text:
       case EleTypes.number: {
@@ -66,13 +72,13 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
             id={id}
             type={type}
             value={formState[id]}
-            onChange={handleChange}
+            {...commonProps}
           />
         );
       }
       case EleTypes.select: {
         return (
-          <select id={id} value={formState[id]} onChange={handleChange}>
+          <select id={id} value={formState[id]} {...commonProps}>
             {options?.map((option: string) => (
               <option key={option} value={option}>
                 {option}
@@ -89,10 +95,9 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
                 <input
                   id={id}
                   type={type}
-                  name={id}
                   value={option}
                   checked={formState[id] === option}
-                  onChange={handleChange}
+                  {...commonProps}
                 />
                 {option}
               </label>
@@ -103,7 +108,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
     }
   };
 
-  const renderErrorMessage = ({ id }: { id: string }) => {
+  const renderErrorMessage = (id: string ) => {
     if (errors[id]) {
       return <div className="error-message">{errors[id]}</div>;
     }
@@ -125,11 +130,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
   return (
     <div className="form-container">
       <form onSubmit={handleFormSubmit}>
-        {formElements.map(({ id, type, label, options }: FormElement) => (
-          <div key={id} className="form-group">
-            <label htmlFor={id}>{label}</label>
-            {renderFormFields({ id, type, options })}
-            {renderErrorMessage({ id })}
+        {formElements.map((ele: FormElement) => (
+          <div key={ele.id} className="form-group">
+            <label htmlFor={ele.id}>{ele.label}</label>
+            {renderFormFields(ele)}
+            {renderErrorMessage(ele.id)}
           </div>
         ))}
         <button type="reset" onClick={handleReset}>Reset</button>
