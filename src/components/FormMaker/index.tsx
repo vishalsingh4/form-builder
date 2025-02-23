@@ -260,6 +260,18 @@ const FormMaker: React.FC = () => {
             {activeTab === 'maker' && (
                 <div className="form-maker-content">
                     <div className="create-new-form-container">
+                        <div className="preview-description">
+                            <h2>Live Preview of your form in making. Check it out!</h2>
+                            <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('livePreview'); }}>
+                                Form Live Preview →
+                            </a>
+                        </div>
+                        <div className="preview-description">
+                            <h2>Check out your saved forms here.</h2>
+                            <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('savedForms'); }}>
+                                Saved Forms →
+                            </a>
+                        </div>
                         <button
                             onClick={() => {
                                 setFormName('');
@@ -268,7 +280,7 @@ const FormMaker: React.FC = () => {
                             }}
                             className="create-new-form-btn"
                         >
-                            Create New
+                            Create New Form
                         </button>
                     </div>
                     <form className="form-maker-form" onSubmit={handleSubmit}>
