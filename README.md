@@ -1,3 +1,40 @@
+# Dynamic Form Maker
+
+This is a dynamic form maker that allows you to create forms with ease.
+
+## Features
+
+- Create forms with ease
+- Save forms
+- Preview forms
+- Delete forms
+
+## Technologies
+
+- Node version: 20.15.0
+- React
+- TypeScript
+- Vite
+
+## Setup
+
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
+
+## Development
+
+To start the development server, run `npm run dev`.
+
+## Production
+
+To build the production version, run `npm run build`.
+
+## Notes
+- This project uses Vite for building the project.
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
