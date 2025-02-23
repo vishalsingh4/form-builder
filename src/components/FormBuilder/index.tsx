@@ -53,16 +53,18 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
 
   const renderFormFields = (ele: FormElement) => {
     const { id, name, placeholder, type, label, options, events } = ele;
-    const commonProps = { name, placeholder, label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      handleChange(e);
+    const debouncedOnChange = events?.onChange ? debounce(events.onChange, DEBOUNCE_DELAY) : null;
 
-      if (events?.onChange) {
-        // debounce(() => {
-        //   events.onChange!(e.target.value);
-        // }, DEBOUNCE_DELAY);
-        events.onChange!(e.target.value);
+    const commonProps = {
+      name, placeholder, label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        handleChange(e);
+
+        if (debouncedOnChange) {
+          // events.onChange!(e.target.value);
+          debouncedOnChange(e.target.value);
+        }
       }
-    } };
+    };
 
     switch (type) {
       case EleTypes.text:
@@ -108,7 +110,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
     }
   };
 
-  const renderErrorMessage = (id: string ) => {
+  const renderErrorMessage = (id: string) => {
     if (errors[id]) {
       return <div className="error-message">{errors[id]}</div>;
     }
@@ -122,7 +124,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formElements }) => {
         acc[ele.id] = ele.value;
         return acc;
       },
-      {} as Record<string, string | number>)
+        {} as Record<string, string | number>)
     );
     setErrors({});
   }
